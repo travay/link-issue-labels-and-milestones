@@ -9022,24 +9022,11 @@ var core = __nccwpck_require__(9699);
 // EXTERNAL MODULE: ./node_modules/@actions/github/lib/github.js
 var github = __nccwpck_require__(7806);
 ;// CONCATENATED MODULE: ./src/graphqlQueries.ts
-const linkedIssuesQuery = (pr_number) => `
-query linkedIssues { 
-  resource(url:"https://github.com/travay/client/pull/${pr_number}") { 
-    ... on PullRequest {
-      closingIssuesReferences(first:10) {
-        nodes {
-          number
-        }
-      }
-    }
-  }
-}
-`;
 const linkedLabelsAndMilestones = (pr_number) => {
-    const queryUrl = `https://github.com/travay/client/pull/${pr_number}`;
+    const queryUrl = encodeURIComponent(`https://github.com/travay/client/pull/${pr_number}`);
     const queryString = `
     query linkedIssues($queryString: URI!) { 
-      resource(url:$queryString) { 
+      resource(url: $queryString) { 
         ... on PullRequest {
           closingIssuesReferences(first:5) {
             nodes {
@@ -9107,7 +9094,7 @@ const main = async () => {
         });
     }
     catch (err) {
-        core.setFailed(err.message);
+        core.setFailed(JSON.stringify(err));
     }
 };
 main();
