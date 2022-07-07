@@ -14,10 +14,10 @@ query linkedIssues {
 
 
 export const linkedLabelsAndMilestones = (pr_number: number) => {
-  const queryURL = `https://github.com/travay/client/pull/${pr_number}`
+  const queryUrl = `https://github.com/travay/client/pull/${pr_number}`
   const queryString = `
-    query linkedIssues($query_string: String!) { 
-      resource(url:$query_string) { 
+    query linkedIssues($queryString: URI!) { 
+      resource(url:$queryString) { 
         ... on PullRequest {
           closingIssuesReferences(first:5) {
             nodes {
@@ -37,10 +37,9 @@ export const linkedLabelsAndMilestones = (pr_number: number) => {
             }
           }
         }
-      },
-      query_string
+      }
     }
   `
 
-  return { queryString, queryURL }
+  return { queryString, queryUrl }
 }

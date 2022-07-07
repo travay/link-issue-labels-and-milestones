@@ -21,10 +21,10 @@ const main = async() => {
     })
   
     // Get labels and milestones of issues linked to the PR
-    const { queryString, queryURL  } = linkedLabelsAndMilestones(pr_number)
+    const { queryString, queryUrl  } = linkedLabelsAndMilestones(pr_number)
     const { data }: ILinkedLabelsAndMilestonesData = await graphqlWithAuth({
       query: queryString,
-      queryURL,
+      queryUrl,
     }) 
 
     const labels = data.resource.closingIssuesReferences.nodes.labels.edges
