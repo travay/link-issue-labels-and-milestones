@@ -1,0 +1,5 @@
+name: Link Issue labels and milestones to PR
+description: Github Action to update a pull request with it's corresponding issue's labels and milestones
+runs: 
+  using: node16
+  main: src/index.ts

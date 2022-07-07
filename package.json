@@ -1,0 +1,12 @@
+{
+  "name": "link-issue-labels-and-milestones",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/travay/link-issue-labels-and-milestones.git",
+  "author": "Ashley Pean <pean.ashley@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@actions/core": "^1.9.0",
+    "@actions/github": "^5.0.3"
+  }
+}
