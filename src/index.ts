@@ -1,6 +1,7 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
-import { addLabelsAndMilestoneToPR, getLinkedLabelsAndMilestone } from './utils';
+import { linkedLabelsAndMilestones } from './graphqlQueries';
+import { ILinkedLabelsAndMilestonesData } from './types';
 
 const main = async() => {
   try {
@@ -19,23 +20,33 @@ const main = async() => {
       }
     })
   
-    const { labels, milestone_number } = await 
-      getLinkedLabelsAndMilestone({
-        graphqlWithAuth, 
-        pr_number,
-      })
+    // Get labels and milestones of issues linked to the PR
+    const { data }: ILinkedLabelsAndMilestonesData = await graphqlWithAuth(linkedLabelsAndMilestones(pr_number)) 
+
+    const labels = data.resource.closingIssuesReferences.nodes.labels.edges
+    const milestone_number = parseInt(data.milestone.id)
+  
+    console.log('LABELS', labels)
+    console.log('MILESTONE', milestone_number)
+  
   
     if(labels.length === 0 && !milestone_number) {
       throw Error('No linked issues. Please link the PR to an existing issue, or create an issue that outlines the problem solved with this pull request.')
     }
   
-    await addLabelsAndMilestoneToPR({ 
-      octokit,
+    // Add labels to PR
+    await octokit.rest.issues.addLabels({
+      owner, 
+      repo,
+      issue_number: pr_number,
+      labels,
+    })
+  
+    // Add milestone to PR
+    await octokit.rest.issues.updateMilestone({
       owner,
       repo,
-      labels,
-      issue_number: pr_number, 
-      milestone_number 
+      milestone_number,
     })
 
   } catch(err) {
