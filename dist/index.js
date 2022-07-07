@@ -9036,10 +9036,10 @@ query linkedIssues {
 }
 `;
 const linkedLabelsAndMilestones = (pr_number) => {
-    const queryURL = `https://github.com/travay/client/pull/${pr_number}`;
+    const queryUrl = `https://github.com/travay/client/pull/${pr_number}`;
     const queryString = `
-    query linkedIssues($query_string: String!) { 
-      resource(url:$query_string) { 
+    query linkedIssues($queryString: URI!) { 
+      resource(url:$queryString) { 
         ... on PullRequest {
           closingIssuesReferences(first:5) {
             nodes {
@@ -9059,11 +9059,10 @@ const linkedLabelsAndMilestones = (pr_number) => {
             }
           }
         }
-      },
-      query_string
+      }
     }
   `;
-    return { queryString, queryURL };
+    return { queryString, queryUrl };
 };
 
 ;// CONCATENATED MODULE: ./src/index.ts
@@ -9083,10 +9082,10 @@ const main = async () => {
                 authorization: myToken,
             }
         });
-        const { queryString, queryURL } = linkedLabelsAndMilestones(pr_number);
+        const { queryString, queryUrl } = linkedLabelsAndMilestones(pr_number);
         const { data } = await graphqlWithAuth({
             query: queryString,
-            queryURL,
+            queryUrl,
         });
         const labels = data.resource.closingIssuesReferences.nodes.labels.edges;
         const milestone_number = parseInt(data.milestone.id);
