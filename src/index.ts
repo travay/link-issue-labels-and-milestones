@@ -54,7 +54,7 @@ const main = async() => {
     })
 
   } catch(err) {
-    core.setFailed(err.message)
+    core.setFailed(JSON.stringify(err))
   }
 }
 
