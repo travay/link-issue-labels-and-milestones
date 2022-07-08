@@ -1,5 +1,6 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
+import { graphql } from '@octokit/graphql';
 import { linkedLabelsAndMilestones } from './graphqlQueries';
 import { ILinkedLabelsAndMilestonesData } from './types';
 
@@ -11,19 +12,13 @@ const main = async() => {
     const pr_number = parseInt(core.getInput('pr_number'))
   
     console.log('INPUTS', { owner, repo, myToken, pr_number })
-  
+
     const octokit = github.getOctokit(myToken)
-  
-    const graphqlWithAuth = octokit.graphql.defaults({
-      headers: {
-        authorization: myToken,
-      }
-    })
 
     // Get labels and milestones of issues linked to the PR
     const { queryString, queryUrl  } = linkedLabelsAndMilestones(pr_number)
     console.log({ queryString, queryUrl })
-    const { data }: ILinkedLabelsAndMilestonesData = await graphqlWithAuth({
+    const { data }: ILinkedLabelsAndMilestonesData = await graphql({
       query: `query linkedIssues($queryUrl: URI!) { 
         resource(url: $queryUrl) { 
           ... on PullRequest {
@@ -47,7 +42,10 @@ const main = async() => {
           }
         }
       }`,
-      queryUrl
+      queryUrl,
+      headers: {
+        authorization: myToken
+      }
     }) 
 
     console.log('QUERY RESULT', data)

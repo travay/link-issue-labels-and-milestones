@@ -9021,6 +9021,8 @@ __nccwpck_require__.r(__webpack_exports__);
 var core = __nccwpck_require__(9699);
 // EXTERNAL MODULE: ./node_modules/@actions/github/lib/github.js
 var github = __nccwpck_require__(7806);
+// EXTERNAL MODULE: ./node_modules/@octokit/graphql/dist-node/index.js
+var dist_node = __nccwpck_require__(2667);
 ;// CONCATENATED MODULE: ./src/graphqlQueries.ts
 const linkedLabelsAndMilestones = (pr_number) => {
     const queryUrl = `https://github.com/travay/client/pull/${pr_number}`;
@@ -9055,6 +9057,7 @@ const linkedLabelsAndMilestones = (pr_number) => {
 
 
 
+
 const main = async () => {
     try {
         const owner = core.getInput('owner');
@@ -9063,14 +9066,9 @@ const main = async () => {
         const pr_number = parseInt(core.getInput('pr_number'));
         console.log('INPUTS', { owner, repo, myToken, pr_number });
         const octokit = github.getOctokit(myToken);
-        const graphqlWithAuth = octokit.graphql.defaults({
-            headers: {
-                authorization: myToken,
-            }
-        });
         const { queryString, queryUrl } = linkedLabelsAndMilestones(pr_number);
         console.log({ queryString, queryUrl });
-        const { data } = await graphqlWithAuth({
+        const { data } = await (0,dist_node.graphql)({
             query: `query linkedIssues($queryUrl: URI!) { 
         resource(url: $queryUrl) { 
           ... on PullRequest {
@@ -9094,7 +9092,10 @@ const main = async () => {
           }
         }
       }`,
-            queryUrl
+            queryUrl,
+            headers: {
+                authorization: myToken
+            }
         });
         console.log('QUERY RESULT', data);
         const labels = data.resource.closingIssuesReferences.nodes.labels.edges;
