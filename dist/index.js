@@ -9023,10 +9023,10 @@ var core = __nccwpck_require__(9699);
 var github = __nccwpck_require__(7806);
 ;// CONCATENATED MODULE: ./src/graphqlQueries.ts
 const linkedLabelsAndMilestones = (pr_number) => {
-    const queryUrl = encodeURIComponent(`https://github.com/travay/client/pull/${pr_number}`);
+    const queryUrl = `https://github.com/travay/client/pull/${pr_number}`;
     const queryString = `
-    query linkedIssues($queryString: URI!) { 
-      resource(url: $queryString) { 
+    query linkedIssues($queryUrl: URI!) { 
+      resource(url: $queryUrl) { 
         ... on PullRequest {
           closingIssuesReferences(first:5) {
             nodes {

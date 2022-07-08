@@ -1,8 +1,8 @@
 export const linkedLabelsAndMilestones = (pr_number: number) => {
-  const queryUrl = encodeURIComponent(`https://github.com/travay/client/pull/${pr_number}`)
+  const queryUrl = `https://github.com/travay/client/pull/${pr_number}`
   const queryString = `
-    query linkedIssues($queryString: URI!) { 
-      resource(url: $queryString) { 
+    query linkedIssues($queryUrl: URI!) { 
+      resource(url: $queryUrl) { 
         ... on PullRequest {
           closingIssuesReferences(first:5) {
             nodes {
