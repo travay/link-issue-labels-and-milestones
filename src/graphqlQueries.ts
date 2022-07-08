@@ -1,5 +1,5 @@
 export const linkedLabelsAndMilestones = (pr_number: number) => {
-  const queryUrl = `https://github.com/travay/client/pull/${pr_number}`
+  const queryUrl = encodeURI(`https://github.com/travay/client/pull/${pr_number}`)
   const queryString = `
     query linkedIssues($queryUrl: URI!) { 
       resource(url: $queryUrl) { 
