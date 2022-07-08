@@ -9023,31 +9023,30 @@ var core = __nccwpck_require__(9699);
 var github = __nccwpck_require__(7806);
 ;// CONCATENATED MODULE: ./src/graphqlQueries.ts
 const linkedLabelsAndMilestones = (pr_number) => {
-    const queryUrl = encodeURI(`https://github.com/travay/client/pull/${pr_number}`);
-    const queryString = `
-    query linkedIssues($queryUrl: URI!) { 
-      resource(url: $queryUrl) { 
-        ... on PullRequest {
-          closingIssuesReferences(first:5) {
-            nodes {
-              number, 
-              labels(first: 5) {
-                edges {
-                  node {
-                    id, 
-                    name
-                  }
+    const queryUrl = `https://github.com/travay/client/pull/${pr_number}`;
+    const queryString = `query linkedIssues($queryUrl: URI!) { 
+    resource(url: $queryUrl) { 
+      ... on PullRequest {
+        closingIssuesReferences(first:5) {
+          nodes {
+            number, 
+            labels(first: 5) {
+              edges {
+                node {
+                  id, 
+                  name
                 }
-              }, 
-              milestone {
-                id, 
-                title
-              },
-            }
+              }
+            }, 
+            milestone {
+              id, 
+              title
+            },
           }
         }
       }
     }
+  }
   `;
     return { queryString, queryUrl };
 };
@@ -9072,9 +9071,32 @@ const main = async () => {
         const { queryString, queryUrl } = linkedLabelsAndMilestones(pr_number);
         console.log({ queryString, queryUrl });
         const { data } = await graphqlWithAuth({
-            query: queryString,
+            query: `query linkedIssues($queryUrl: URI!) { 
+        resource(url: $queryUrl) { 
+          ... on PullRequest {
+            closingIssuesReferences(first:5) {
+              nodes {
+                number, 
+                labels(first: 5) {
+                  edges {
+                    node {
+                      id, 
+                      name
+                    }
+                  }
+                }, 
+                milestone {
+                  id, 
+                  title
+                },
+              }
+            }
+          }
+        }
+      }`,
             queryUrl
         });
+        console.log('QUERY RESULT', data);
         const labels = data.resource.closingIssuesReferences.nodes.labels.edges;
         const milestone_number = parseInt(data.milestone.id);
         console.log('LABELS', labels);
