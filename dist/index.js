@@ -9096,7 +9096,7 @@ const main = async () => {
         });
     }
     catch (err) {
-        core.setFailed(JSON.stringify(err));
+        core.setFailed(err.message);
     }
 };
 main();
