@@ -9042,6 +9042,7 @@ const linkedLabelsAndMilestones = (pr_number) => {
             }, 
             milestone {
               id, 
+              number,
               title
             },
           }
@@ -9066,16 +9067,35 @@ const main = async () => {
         const pr_number = parseInt(core.getInput('pr_number'));
         console.log('INPUTS', { owner, repo, myToken, pr_number });
         const octokit = github.getOctokit(myToken);
+        const labels = [];
+        let milestones = [];
         const { queryString, queryUrl } = linkedLabelsAndMilestones(pr_number);
         console.log({ queryString, queryUrl });
-        const data = await (0,dist_node.graphql)({
+        const { resource } = await (0,dist_node.graphql)({
             query: queryString,
             queryUrl,
             headers: {
                 authorization: 'bearer ' + myToken
             }
         });
-        console.log('QUERY RESULT', data);
+        if (!resource) {
+            throw Error('Could not find linked issues');
+        }
+        console.log('QUERY RESULT', resource);
+        resource.closingIssuesReferences.nodes.forEach((issue) => {
+            issue.labels.edges.forEach((issueLabels) => labels.push(issueLabels.node.name));
+        });
+        resource.closingIssuesReferences.nodes.forEach((issue) => {
+            milestones.push(issue.milestone.number);
+        });
+        console.log('LABELS', labels);
+        console.log('MILESTONE', milestones);
+        if (labels.length === 0) {
+            throw Error('Linked issue has no labels, please make sure to appropriately label the issue linked to this PR.');
+        }
+        if (milestones.length === 0) {
+            throw Error('Linked issue has no milestone, please make sure to add a milestone to the issue linked to this PR.');
+        }
     }
     catch (err) {
         core.setFailed(err.message);

@@ -23,6 +23,7 @@ interface LabelNode {
 
 interface MilestoneNode {
   id: string;
+  number: number;
   title: string;
 }
 

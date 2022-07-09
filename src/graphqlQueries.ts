@@ -17,6 +17,7 @@ export const linkedLabelsAndMilestones = (pr_number: number) => {
             }, 
             milestone {
               id, 
+              number,
               title
             },
           }

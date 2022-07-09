@@ -2,7 +2,7 @@ import * as core from '@actions/core'
 import * as github from '@actions/github'
 import { graphql } from '@octokit/graphql';
 import { linkedLabelsAndMilestones } from './graphqlQueries';
-import { ILinkedLabelsAndMilestonesData } from './types';
+import { LinkedLabelsAndMilestonesData } from './types';
 
 const main = async() => {
   try {
@@ -14,11 +14,13 @@ const main = async() => {
     console.log('INPUTS', { owner, repo, myToken, pr_number })
 
     const octokit = github.getOctokit(myToken)
+    const labels: string[] = []
+    let milestones: number[] = []
 
     // Get labels and milestones of issues linked to the PR
     const { queryString, queryUrl  } = linkedLabelsAndMilestones(pr_number)
     console.log({ queryString, queryUrl })
-    const { resource }: ILinkedLabelsAndMilestonesData = await graphql({
+    const { resource }: LinkedLabelsAndMilestonesData = await graphql({
       query: queryString,
       queryUrl,
       headers: {
@@ -32,15 +34,27 @@ const main = async() => {
 
     console.log('QUERY RESULT', resource)
 
-    const labels = resource.closingIssuesReferences.nodes.labels.edges
-    const milestone_number = parseInt(resource.closingIssuesReferences.nodes.milestone.id)
+    // Find all labels 
+    resource.closingIssuesReferences.nodes.forEach((issue) => {
+      issue.labels.edges.forEach(
+        (issueLabels) => labels.push(issueLabels.node.name)
+      )
+    })
+
+    // Find all milestones
+    resource.closingIssuesReferences.nodes.forEach((issue) => {
+      milestones.push(issue.milestone.number)
+    })
   
     console.log('LABELS', labels)
-    console.log('MILESTONE', milestone_number)
+    console.log('MILESTONE', milestones)
   
+    if(labels.length === 0) {
+      throw Error('Linked issue has no labels, please make sure to appropriately label the issue linked to this PR.')
+    }
   
-    if(labels.length === 0 && !milestone_number) {
-      throw Error('No linked issues. Please link the PR to an existing issue, or create an issue that outlines the problem solved with this pull request.')
+    if( milestones.length === 0) {
+      throw Error('Linked issue has no milestone, please make sure to add a milestone to the issue linked to this PR.')
     }
   
     // // Add labels to PR
