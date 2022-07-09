@@ -10,8 +10,6 @@ const main = async() => {
     const repo = core.getInput('repo')
     const myToken = core.getInput('myToken');
     const pr_number = parseInt(core.getInput('pr_number'))
-  
-    console.log('INPUTS', { owner, repo, myToken, pr_number })
 
     const octokit = github.getOctokit(myToken)
     const labels: string[] = []
@@ -19,7 +17,7 @@ const main = async() => {
 
     // Get labels and milestones of issues linked to the PR
     const { queryString, queryUrl  } = linkedLabelsAndMilestones(pr_number)
-    console.log({ queryString, queryUrl })
+
     const { resource }: LinkedLabelsAndMilestonesData = await graphql({
       query: queryString,
       queryUrl,
@@ -32,8 +30,6 @@ const main = async() => {
       throw Error('Could not find linked issues')
     }
 
-    console.log('QUERY RESULT', resource)
-
     // Find all labels 
     resource.closingIssuesReferences.nodes.forEach((issue) => {
       issue.labels.edges.forEach(
@@ -45,9 +41,6 @@ const main = async() => {
     resource.closingIssuesReferences.nodes.forEach((issue) => {
       milestones.push(issue.milestone.number)
     })
-  
-    console.log('LABELS', labels)
-    console.log('MILESTONE', milestones)
   
     if(labels.length === 0) {
       throw Error('Linked issue has no labels, please make sure to appropriately label the issue linked to this PR.')
@@ -66,10 +59,11 @@ const main = async() => {
     })
   
     // Add milestone to PR
-    await octokit.rest.issues.updateMilestone({
+    await octokit.rest.issues.update({
       owner,
       repo,
-      milestone_number: milestones[milestones.length - 1],
+      issue_number: pr_number,
+      milestone: milestones[milestones.length - 1],
     })
 
   } catch(err) {
