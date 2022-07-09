@@ -9091,17 +9091,12 @@ const main = async () => {
         if (milestones.length === 0) {
             throw Error('Linked issue has no milestone, please make sure to add a milestone to the issue linked to this PR.');
         }
-        await octokit.rest.issues.addLabels({
-            owner,
-            repo,
-            issue_number: pr_number,
-            labels,
-        });
         await octokit.rest.issues.update({
             owner,
             repo,
             issue_number: pr_number,
             milestone: milestones[milestones.length - 1],
+            labels,
         });
     }
     catch (err) {

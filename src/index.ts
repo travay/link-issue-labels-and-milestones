@@ -50,20 +50,13 @@ const main = async() => {
       throw Error('Linked issue has no milestone, please make sure to add a milestone to the issue linked to this PR.')
     }
   
-    // Add labels to PR
-    await octokit.rest.issues.addLabels({
-      owner, 
-      repo,
-      issue_number: pr_number,
-      labels,
-    })
-  
     // Add milestone to PR
     await octokit.rest.issues.update({
       owner,
       repo,
       issue_number: pr_number,
       milestone: milestones[milestones.length - 1],
+      labels,
     })
 
   } catch(err) {
