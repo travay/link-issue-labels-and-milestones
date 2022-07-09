@@ -18,7 +18,7 @@ const main = async() => {
     // Get labels and milestones of issues linked to the PR
     const { queryString, queryUrl  } = linkedLabelsAndMilestones(pr_number)
     console.log({ queryString, queryUrl })
-    const data: ILinkedLabelsAndMilestonesData = await graphql({
+    const { resource }: ILinkedLabelsAndMilestonesData = await graphql({
       query: queryString,
       queryUrl,
       headers: {
@@ -26,18 +26,22 @@ const main = async() => {
       }
     }) 
 
-    console.log('QUERY RESULT', data)
+    if(!resource) {
+      throw Error('Could not find linked issues')
+    }
 
-    // const labels = data.resource.closingIssuesReferences.nodes.labels.edges
-    // const milestone_number = parseInt(data.milestone.id)
+    console.log('QUERY RESULT', resource)
+
+    const labels = resource.closingIssuesReferences.nodes.labels.edges
+    const milestone_number = parseInt(resource.closingIssuesReferences.nodes.milestone.id)
   
-    // console.log('LABELS', labels)
-    // console.log('MILESTONE', milestone_number)
+    console.log('LABELS', labels)
+    console.log('MILESTONE', milestone_number)
   
   
-    // if(labels.length === 0 && !milestone_number) {
-    //   throw Error('No linked issues. Please link the PR to an existing issue, or create an issue that outlines the problem solved with this pull request.')
-    // }
+    if(labels.length === 0 && !milestone_number) {
+      throw Error('No linked issues. Please link the PR to an existing issue, or create an issue that outlines the problem solved with this pull request.')
+    }
   
     // // Add labels to PR
     // await octokit.rest.issues.addLabels({

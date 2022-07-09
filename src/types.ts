@@ -1,26 +1,27 @@
-export interface ILinkedLabelsAndMilestonesData {
-  data: {
-    resource: Labels
-    milestone: Milestone
-  }
- 
-}
-
-interface Labels {
-  closingIssuesReferences: {
-    nodes: {
-      number: number;
-      labels: {
-        edges: Array<{
-          id: string;
-          name: string;
-        }>
-      }
+export interface LinkedLabelsAndMilestonesData {
+  resource: {
+    closingIssuesReferences: {
+      nodes: IssueNode[]
     }
   }
 }
 
-interface Milestone {
+interface IssueNode {
+  number: number;
+  labels: {
+    edges: LabelNode[]
+  };
+  milestone:MilestoneNode
+}
+
+interface LabelNode {
+ node: {
+  id: string;
+  name: string;
+ }
+}
+
+interface MilestoneNode {
   id: string;
   title: string;
 }
