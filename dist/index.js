@@ -9068,7 +9068,7 @@ const main = async () => {
         const octokit = github.getOctokit(myToken);
         const { queryString, queryUrl } = linkedLabelsAndMilestones(pr_number);
         console.log({ queryString, queryUrl });
-        const { data } = await (0,dist_node.graphql)({
+        const data = await (0,dist_node.graphql)({
             query: queryString,
             queryUrl,
             headers: {
@@ -9076,24 +9076,6 @@ const main = async () => {
             }
         });
         console.log('QUERY RESULT', data);
-        const labels = data.resource.closingIssuesReferences.nodes.labels.edges;
-        const milestone_number = parseInt(data.milestone.id);
-        console.log('LABELS', labels);
-        console.log('MILESTONE', milestone_number);
-        if (labels.length === 0 && !milestone_number) {
-            throw Error('No linked issues. Please link the PR to an existing issue, or create an issue that outlines the problem solved with this pull request.');
-        }
-        await octokit.rest.issues.addLabels({
-            owner,
-            repo,
-            issue_number: pr_number,
-            labels,
-        });
-        await octokit.rest.issues.updateMilestone({
-            owner,
-            repo,
-            milestone_number,
-        });
     }
     catch (err) {
         core.setFailed(err.message);
