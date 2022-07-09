@@ -19,32 +19,10 @@ const main = async() => {
     const { queryString, queryUrl  } = linkedLabelsAndMilestones(pr_number)
     console.log({ queryString, queryUrl })
     const { data }: ILinkedLabelsAndMilestonesData = await graphql({
-      query: `query linkedIssues($queryUrl: URI!) { 
-        resource(url: $queryUrl) { 
-          ... on PullRequest {
-            closingIssuesReferences(first:5) {
-              nodes {
-                number, 
-                labels(first: 5) {
-                  edges {
-                    node {
-                      id, 
-                      name
-                    }
-                  }
-                }, 
-                milestone {
-                  id, 
-                  title
-                },
-              }
-            }
-          }
-        }
-      }`,
+      query: queryString,
       queryUrl,
       headers: {
-        authorization: myToken
+        authorization: 'bearer ' + myToken
       }
     }) 
 

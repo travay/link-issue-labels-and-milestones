@@ -9069,32 +9069,10 @@ const main = async () => {
         const { queryString, queryUrl } = linkedLabelsAndMilestones(pr_number);
         console.log({ queryString, queryUrl });
         const { data } = await (0,dist_node.graphql)({
-            query: `query linkedIssues($queryUrl: URI!) { 
-        resource(url: $queryUrl) { 
-          ... on PullRequest {
-            closingIssuesReferences(first:5) {
-              nodes {
-                number, 
-                labels(first: 5) {
-                  edges {
-                    node {
-                      id, 
-                      name
-                    }
-                  }
-                }, 
-                milestone {
-                  id, 
-                  title
-                },
-              }
-            }
-          }
-        }
-      }`,
+            query: queryString,
             queryUrl,
             headers: {
-                authorization: myToken
+                authorization: 'bearer ' + myToken
             }
         });
         console.log('QUERY RESULT', data);
