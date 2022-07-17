@@ -26,9 +26,9 @@ const main = async () => {
       },
     });
 
-    if (!resource) {
-      throw Error("Could not find linked issues");
-    }
+    // if (!resource) {
+    //   throw Error("Could not find linked issues");
+    // }
 
     console.log(resource)
 
