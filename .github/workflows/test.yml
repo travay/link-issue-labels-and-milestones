@@ -10,3 +10,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: ./
+        with:
+          owner: ${{ github.repository_owner }}
+          myToken: ${{ github.token }}
+          repo: ${{ github.event.repository.name }}
+          pr_number: ${{ github.event.number }}
