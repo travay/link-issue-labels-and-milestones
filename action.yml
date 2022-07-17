@@ -6,13 +6,13 @@ inputs:
     description: Repository owner
     required: true
   repo: 
-    description: Current epository
+    description: Current repository
     required: true
   myToken: 
     description: Authorization token
     required: true
   pr_number: 
-    description: Pull reuquest number
+    description: Pull request number
     required: true
 runs: 
   using: node16
