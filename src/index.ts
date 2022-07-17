@@ -31,7 +31,7 @@ const main = async () => {
     // }
 
     console.log('Resource', resource)
-    console.log('My Token', myToken === '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', myToken)
+    console.log('My Token', myToken)
     console.log('Owner', owner)
     console.log("Repo", repo)
     console.log('PR_number', pr_number)
