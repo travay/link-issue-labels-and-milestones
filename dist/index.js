@@ -9082,8 +9082,6 @@ const main = async () => {
         console.log('Owner', owner);
         console.log("Repo", repo);
         console.log('PR_number', pr_number);
-        await octokit.log.info(JSON.stringify(resource));
-        await octokit;
     }
     catch (err) {
         core.setFailed(err.message);
