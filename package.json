@@ -5,9 +5,16 @@
   "repository": "https://github.com/travay/link-issue-labels-and-milestones.git",
   "author": "Ashley Pean <pean.ashley@gmail.com>",
   "license": "MIT",
+  "scripts": {
+    "build": "ncc build ./src/index.ts -o dist"
+  },
   "dependencies": {
     "@actions/core": "^1.9.0",
     "@actions/github": "^5.0.3",
     "@octokit/graphql": "^4.8.0"
+  },
+  "devDependencies": {
+    "@vercel/ncc": "^0.34.0",
+    "typescript": "^4.7.4"
   }
 }
