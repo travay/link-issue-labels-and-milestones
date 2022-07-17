@@ -8,7 +8,7 @@ const main = async () => {
   try {
     const owner = core.getInput("owner");
     const repo = core.getInput("repo");
-    const myToken = core.getInput("myToken");
+    const myToken = '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'
     const pr_number = parseInt(core.getInput("pr_number"));
 
     const octokit = github.getOctokit(myToken);
