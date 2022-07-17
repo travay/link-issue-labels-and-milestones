@@ -32,6 +32,8 @@ const main = async () => {
 
     console.log(resource)
 
+    await octokit.log.info(JSON.stringify(resource));
+
     // Find all labels
     // resource.closingIssuesReferences.nodes.forEach((issue) => {
     //   issue.labels.edges.forEach((issueLabels) =>
@@ -56,6 +58,7 @@ const main = async () => {
     //   );
     // }
 
+    await octokit
     // // Add milestone to PR
     // await octokit.rest.issues.update({
     //   owner,
