@@ -35,7 +35,7 @@ const main = async () => {
     const linkedIssues =
       data?.repository?.pullRequest?.closingIssuesReferences?.nodes;
 
-    console.log("LINKED ISSUES: ", linkedIssues);
+    console.log("LINKED ISSUES: new value", linkedIssues);
 
     if (!linkedIssues || !linkedIssues.length) {
       throw Error("Could not find linked issues");
@@ -74,7 +74,7 @@ const main = async () => {
         body: 'This PR resolves ' + issueDescriptions.title + '\n' + issueDescriptions.body
       })
     })
-    
+
     // Add milestone and labels to PR
     await octokit.rest.issues.update({
       owner,
