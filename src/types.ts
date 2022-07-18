@@ -2,7 +2,7 @@ export interface LinkedLabelsAndMilestonesData {
   repository: {
     pullRequest: {
       closingIssuesReferences: {
-        nodes: IssueNode[]
+        nodes: IssueNode[];
       }
     }
   }
