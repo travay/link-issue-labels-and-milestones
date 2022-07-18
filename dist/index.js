@@ -9104,17 +9104,6 @@ const main = async () => {
         if (milestones.length === 0) {
             throw Error("Linked issue has no milestone, please make sure to add a milestone to the issue linked to this PR.");
         }
-        issueDescriptions.forEach(async (issueDescriptions) => {
-            await octokit.rest.issues.createComment({
-                owner,
-                issue_number: issueDescriptions.issue_number,
-                repo,
-                body: "This PR resolves " +
-                    issueDescriptions.title +
-                    "\n" +
-                    issueDescriptions.body,
-            });
-        });
         await octokit.rest.issues.update({
             owner,
             repo,

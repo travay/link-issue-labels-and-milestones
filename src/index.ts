@@ -71,18 +71,18 @@ const main = async () => {
       );
     }
 
-    issueDescriptions.forEach(async (issueDescriptions) => {
-      await octokit.rest.issues.createComment({
-        owner,
-        issue_number: issueDescriptions.issue_number,
-        repo,
-        body:
-          "This PR resolves " +
-          issueDescriptions.title +
-          "\n" +
-          issueDescriptions.body,
-      });
-    });
+    // issueDescriptions.forEach(async (issueDescriptions) => {
+    //   await octokit.rest.issues.createComment({
+    //     owner,
+    //     issue_number: issueDescriptions.issue_number,
+    //     repo,
+    //     body:
+    //       "This PR resolves " +
+    //       issueDescriptions.title +
+    //       "\n" +
+    //       issueDescriptions.body,
+    //   });
+    // });
 
     // Add milestone and labels to PR
     await octokit.rest.issues.update({
