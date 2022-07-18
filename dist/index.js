@@ -9069,6 +9069,7 @@ const main = async () => {
         const octokit = github.getOctokit(myToken);
         const labels = [];
         let milestones = [];
+        let issueDescriptions = [];
         const data = await (0,dist_node.graphql)({
             query: linkedLabelsAndMilestonesQueryString,
             name: repo,
@@ -9078,11 +9079,16 @@ const main = async () => {
                 authorization: "bearer " + myToken,
             },
         });
-        console.log("Resource", data);
-        console.log("My Token", myToken);
-        console.log("Owner", owner);
-        console.log("Repo", repo);
-        console.log("PR_number", pr_number);
+        const linkedIssues = data?.repository?.pullRequest?.closingIssuesReferences?.nodes;
+        console.log("LINKED ISSUES: ", linkedIssues);
+        if (!linkedIssues) {
+            throw Error("Could not find linked issues");
+        }
+        linkedIssues.forEach((issue) => {
+            issueDescriptions.push(issue.body);
+            issue.labels.nodes.forEach((issueLabel) => labels.push(issueLabel.name));
+        });
+        console.log(issueDescriptions);
     }
     catch (err) {
         core.setFailed(err.message);
