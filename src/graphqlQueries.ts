@@ -1,32 +1,24 @@
-export const linkedLabelsAndMilestones = (pr_number: number) => {
-  const queryUrl = `https://github.com/travay/client/pull/${pr_number}`
-  const queryString = 
-  `query linkedIssues($queryUrl: URI!) { 
-    resource(url: $queryUrl) { 
-      ... on PullRequest {
-        closingIssuesReferences(first:5) {
+export const linkedLabelsAndMilestonesQueryString = `
+  query linkedLabelsAndMilestones($name: String!, $owner: String!, $number: Int!) {
+    repository(name: $name, owner: $owner) {
+      pullRequest(number: $number) {
+        closingIssuesReferences(first: 10) {
           nodes {
-            number, 
-            body,
-            labels(first: 5) {
-              edges {
-                node {
-                  id, 
-                  name
-                }
-              }
-            }, 
+            number
             milestone {
-              id, 
-              number,
+              id
+              number
               title
-            },
+            }
+            labels(first: 10) {
+              nodes {
+                id
+                name
+              }
+            }
           }
         }
       }
     }
   }
-  `
-
-  return { queryString, queryUrl }
-}
+`

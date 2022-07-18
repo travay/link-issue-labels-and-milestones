@@ -9024,13 +9024,13 @@ var github = __nccwpck_require__(5438);
 // EXTERNAL MODULE: ./node_modules/@octokit/graphql/dist-node/index.js
 var dist_node = __nccwpck_require__(8467);
 ;// CONCATENATED MODULE: ./src/graphqlQueries.ts
-const linkedLabelsAndMilestones = (pr_number) => {
-    const queryUrl = `https://github.com/travay/client/pull/${pr_number}`;
-    const queryString = `query linkedIssues($queryUrl: URI!) { 
-    resource(url: $queryUrl) { 
-      ... on PullRequest {
-        closingIssuesReferences(first:5) {
+const linkedLabelsAndMilestonesQueryString = `
+  query linkedLabelsAndMilestones($name: String!, $owner: String!, $number: Int!) {
+    repository(name: $name, owner: $owner) {
+      pullRequest(number: $number) {
+        closingIssuesReferences(first: 10) {
           nodes {
+<<<<<<< HEAD
             number, 
             body,
             labels(first: 5) {
@@ -9041,19 +9041,26 @@ const linkedLabelsAndMilestones = (pr_number) => {
                 }
               }
             }, 
+=======
+            number
+>>>>>>> 1e2cbca (simplify query and remove hardcoded repository)
             milestone {
-              id, 
-              number,
+              id
+              number
               title
-            },
+            }
+            labels(first: 10) {
+              nodes {
+                id
+                name
+              }
+            }
           }
         }
       }
     }
   }
-  `;
-    return { queryString, queryUrl };
-};
+`;
 
 ;// CONCATENATED MODULE: ./src/index.ts
 
@@ -9069,6 +9076,7 @@ const main = async () => {
         const octokit = github.getOctokit(myToken);
         const labels = [];
         let milestones = [];
+<<<<<<< HEAD
         const { queryString, queryUrl } = linkedLabelsAndMilestones(pr_number);
         const resource = await (0,dist_node.graphql)({
             query: queryString,
@@ -9076,6 +9084,39 @@ const main = async () => {
             headers: {
                 authorization: "bearer " + myToken,
             },
+=======
+        const data = await (0,dist_node.graphql)({
+            query: linkedLabelsAndMilestonesQueryString,
+            name: repo,
+            owner: owner,
+            number: pr_number,
+            headers: {
+                authorization: 'bearer ' + myToken
+            }
+        });
+        const linkedIssues = data?.repository?.pullRequest?.closingIssuesReferences?.nodes;
+        if (!linkedIssues) {
+            throw Error('Could not find linked issues');
+        }
+        linkedIssues.forEach((issue) => {
+            issue.labels.nodes.forEach((issueLabel) => labels.push(issueLabel.name));
+        });
+        linkedIssues.forEach((issue) => {
+            milestones.push(issue.milestone.number);
+        });
+        if (labels.length === 0) {
+            throw Error('Linked issue has no labels, please make sure to appropriately label the issue linked to this PR.');
+        }
+        if (milestones.length === 0) {
+            throw Error('Linked issue has no milestone, please make sure to add a milestone to the issue linked to this PR.');
+        }
+        await octokit.rest.issues.update({
+            owner,
+            repo,
+            issue_number: pr_number,
+            milestone: milestones[milestones.length - 1],
+            labels,
+>>>>>>> 1e2cbca (simplify query and remove hardcoded repository)
         });
         console.log('Resource', resource);
         console.log('My Token', myToken === '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', myToken);
