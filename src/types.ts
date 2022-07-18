@@ -10,6 +10,7 @@ export interface LinkedLabelsAndMilestonesData {
 
 interface IssueNode {
   number: number;
+  body: string;
   milestone: {
     id: string;
     number: number;
