@@ -5,6 +5,7 @@ export const linkedLabelsAndMilestonesQueryString = `
         closingIssuesReferences(first: 10) {
           nodes {
             number
+            body
             milestone {
               id
               number
