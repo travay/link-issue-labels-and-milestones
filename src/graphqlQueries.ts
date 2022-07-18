@@ -6,6 +6,7 @@ export const linkedLabelsAndMilestonesQueryString = `
           nodes {
             number
             body
+            title
             milestone {
               id
               number

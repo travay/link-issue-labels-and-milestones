@@ -2,7 +2,7 @@ import * as core from "@actions/core";
 import * as github from "@actions/github";
 import { graphql } from "@octokit/graphql";
 import { linkedLabelsAndMilestonesQueryString } from "./graphqlQueries";
-import { LinkedLabelsAndMilestonesData } from "./types";
+import { LinkedLabelsAndMilestonesData, issueDescriptionsObj } from "./types";
 
 const main = async () => {
   try {
@@ -20,7 +20,7 @@ const main = async () => {
     const octokit = github.getOctokit(myToken);
     const labels: string[] = [];
     let milestones: number[] = [];
-    let issueDescriptions: string[] = [];
+    let issueDescriptions: Array<issueDescriptionsObj> = [];
 
     const data: LinkedLabelsAndMilestonesData = await graphql({
       query: linkedLabelsAndMilestonesQueryString,
@@ -37,43 +37,53 @@ const main = async () => {
 
     console.log("LINKED ISSUES: ", linkedIssues);
 
-    if (!linkedIssues.length) {
+    if (!linkedIssues || !linkedIssues.length) {
       throw Error("Could not find linked issues");
     }
 
     // // Find and store all labels
     linkedIssues.forEach((issue) => {
-      issueDescriptions.push(issue.body)
+      issueDescriptions.push({body: issue.body, title: issue.title, issue_number: issue.number})
       issue.labels.nodes.forEach((issueLabel) => labels.push(issueLabel.name));
     });
 
     console.log(issueDescriptions);
 
-    // // Find and store all milestones
-    // linkedIssues.forEach((issue) => {
-    //   milestones.push(issue.milestone.number);
-    // });
+    // Find and store all milestones
+    linkedIssues.forEach((issue) => {
+      milestones.push(issue.milestone.number);
+    });
 
-    // if (labels.length === 0) {
-    //   throw Error(
-    //     "Linked issue has no labels, please make sure to appropriately label the issue linked to this PR."
-    //   );
-    // }
+    if (labels.length === 0) {
+      throw Error(
+        "Linked issue has no labels, please make sure to appropriately label the issue linked to this PR."
+      );
+    }
 
-    // if (milestones.length === 0) {
-    //   throw Error(
-    //     "Linked issue has no milestone, please make sure to add a milestone to the issue linked to this PR."
-    //   );
-    // }
+    if (milestones.length === 0) {
+      throw Error(
+        "Linked issue has no milestone, please make sure to add a milestone to the issue linked to this PR."
+      );
+    }
 
-    // // Add milestone and labels to PR
-    // await octokit.rest.issues.update({
-    //   owner,
-    //   repo,
-    //   issue_number: pr_number,
-    //   milestone: milestones[milestones.length - 1],
-    //   labels,
-    // });
+    issueDescriptions.forEach( async (issueDescriptions) => {
+      await octokit.rest.issues.createComment({
+        owner,
+        issue_number: issueDescriptions.issue_number,
+        repo,
+        body: 'This PR resolves ' + issueDescriptions.title + '\n' + issueDescriptions.body
+      })
+    })
+    
+    // Add milestone and labels to PR
+    await octokit.rest.issues.update({
+      owner,
+      repo,
+      issue_number: pr_number,
+      milestone: milestones[milestones.length - 1],
+      labels,
+    });
+
   } catch (err) {
     core.setFailed(err.message);
   }
