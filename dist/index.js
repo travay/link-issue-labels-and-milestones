@@ -9081,7 +9081,7 @@ const main = async () => {
             },
         });
         const linkedIssues = data?.repository?.pullRequest?.closingIssuesReferences?.nodes;
-        console.log("LINKED ISSUES: ", linkedIssues);
+        console.log("LINKED ISSUES: new value", linkedIssues);
         if (!linkedIssues || !linkedIssues.length) {
             throw Error("Could not find linked issues");
         }
