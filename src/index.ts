@@ -1,10 +1,10 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 import { graphql } from '@octokit/graphql';
-import { linkedLabelsAndMilestones } from './graphqlQueries';
+import { linkedLabelsAndMilestonesQueryString } from './graphqlQueries';
 import { LinkedLabelsAndMilestonesData } from './types';
 
-const main = async() => {
+const main = async () => {
   try {
     const owner = core.getInput('owner');
     const repo = core.getInput('repo')
@@ -15,30 +15,31 @@ const main = async() => {
     const labels: string[] = []
     let milestones: number[] = []
 
-    // Get labels and milestones of issues linked to the PR
-    const { queryString, queryUrl  } = linkedLabelsAndMilestones(pr_number)
-
-    const { resource }: LinkedLabelsAndMilestonesData = await graphql({
-      query: queryString,
-      queryUrl,
+    const data: LinkedLabelsAndMilestonesData = await graphql({
+      query: linkedLabelsAndMilestonesQueryString,
+      name: repo, 
+      owner: owner, 
+      number: pr_number, 
       headers: {
         authorization: 'bearer ' + myToken
       }
     }) 
 
-    if(!resource) {
+    const linkedIssues = data?.repository?.pullRequest?.closingIssuesReferences?.nodes
+
+    if(!linkedIssues) {
       throw Error('Could not find linked issues')
     }
 
-    // Find all labels 
-    resource.closingIssuesReferences.nodes.forEach((issue) => {
-      issue.labels.edges.forEach(
-        (issueLabels) => labels.push(issueLabels.node.name)
+    // Find and store all labels
+    linkedIssues.forEach((issue) => {
+      issue.labels.nodes.forEach(
+        (issueLabel) => labels.push(issueLabel.name)
       )
     })
 
-    // Find all milestones
-    resource.closingIssuesReferences.nodes.forEach((issue) => {
+    // Find and store all milestones
+    linkedIssues.forEach((issue) => {
       milestones.push(issue.milestone.number)
     })
   
@@ -50,7 +51,7 @@ const main = async() => {
       throw Error('Linked issue has no milestone, please make sure to add a milestone to the issue linked to this PR.')
     }
   
-    // Add milestone to PR
+    // Add milestone and labels to PR
     await octokit.rest.issues.update({
       owner,
       repo,

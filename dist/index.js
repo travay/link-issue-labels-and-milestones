@@ -9024,35 +9024,30 @@ var github = __nccwpck_require__(7806);
 // EXTERNAL MODULE: ./node_modules/@octokit/graphql/dist-node/index.js
 var dist_node = __nccwpck_require__(2667);
 ;// CONCATENATED MODULE: ./src/graphqlQueries.ts
-const linkedLabelsAndMilestones = (pr_number) => {
-    const queryUrl = `https://github.com/travay/client/pull/${pr_number}`;
-    const queryString = `query linkedIssues($queryUrl: URI!) { 
-    resource(url: $queryUrl) { 
-      ... on PullRequest {
-        closingIssuesReferences(first:5) {
+const linkedLabelsAndMilestonesQueryString = `
+  query linkedLabelsAndMilestones($name: String!, $owner: String!, $number: Int!) {
+    repository(name: $name, owner: $owner) {
+      pullRequest(number: $number) {
+        closingIssuesReferences(first: 10) {
           nodes {
-            number, 
-            labels(first: 5) {
-              edges {
-                node {
-                  id, 
-                  name
-                }
-              }
-            }, 
+            number
             milestone {
-              id, 
-              number,
+              id
+              number
               title
-            },
+            }
+            labels(first: 10) {
+              nodes {
+                id
+                name
+              }
+            }
           }
         }
       }
     }
   }
-  `;
-    return { queryString, queryUrl };
-};
+`;
 
 ;// CONCATENATED MODULE: ./src/index.ts
 
@@ -9068,21 +9063,23 @@ const main = async () => {
         const octokit = github.getOctokit(myToken);
         const labels = [];
         let milestones = [];
-        const { queryString, queryUrl } = linkedLabelsAndMilestones(pr_number);
-        const { resource } = await (0,dist_node.graphql)({
-            query: queryString,
-            queryUrl,
+        const data = await (0,dist_node.graphql)({
+            query: linkedLabelsAndMilestonesQueryString,
+            name: repo,
+            owner: owner,
+            number: pr_number,
             headers: {
                 authorization: 'bearer ' + myToken
             }
         });
-        if (!resource) {
+        const linkedIssues = data?.repository?.pullRequest?.closingIssuesReferences?.nodes;
+        if (!linkedIssues) {
             throw Error('Could not find linked issues');
         }
-        resource.closingIssuesReferences.nodes.forEach((issue) => {
-            issue.labels.edges.forEach((issueLabels) => labels.push(issueLabels.node.name));
+        linkedIssues.forEach((issue) => {
+            issue.labels.nodes.forEach((issueLabel) => labels.push(issueLabel.name));
         });
-        resource.closingIssuesReferences.nodes.forEach((issue) => {
+        linkedIssues.forEach((issue) => {
             milestones.push(issue.milestone.number);
         });
         if (labels.length === 0) {
