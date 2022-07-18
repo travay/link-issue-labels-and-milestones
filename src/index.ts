@@ -35,6 +35,7 @@ const main = async () => {
     const linkedIssues =
       data?.repository?.pullRequest?.closingIssuesReferences?.nodes;
 
+    console.log(data);
     console.log("LINKED ISSUES: new value", linkedIssues);
 
     if (!linkedIssues || !linkedIssues.length) {
@@ -43,7 +44,11 @@ const main = async () => {
 
     // // Find and store all labels
     linkedIssues.forEach((issue) => {
-      issueDescriptions.push({body: issue.body, title: issue.title, issue_number: issue.number})
+      issueDescriptions.push({
+        body: issue.body,
+        title: issue.title,
+        issue_number: issue.number,
+      });
       issue.labels.nodes.forEach((issueLabel) => labels.push(issueLabel.name));
     });
 
@@ -66,14 +71,18 @@ const main = async () => {
       );
     }
 
-    issueDescriptions.forEach( async (issueDescriptions) => {
+    issueDescriptions.forEach(async (issueDescriptions) => {
       await octokit.rest.issues.createComment({
         owner,
         issue_number: issueDescriptions.issue_number,
         repo,
-        body: 'This PR resolves ' + issueDescriptions.title + '\n' + issueDescriptions.body
-      })
-    })
+        body:
+          "This PR resolves " +
+          issueDescriptions.title +
+          "\n" +
+          issueDescriptions.body,
+      });
+    });
 
     // Add milestone and labels to PR
     await octokit.rest.issues.update({
@@ -83,7 +92,6 @@ const main = async () => {
       milestone: milestones[milestones.length - 1],
       labels,
     });
-
   } catch (err) {
     core.setFailed(err.message);
   }

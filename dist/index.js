@@ -9081,12 +9081,17 @@ const main = async () => {
             },
         });
         const linkedIssues = data?.repository?.pullRequest?.closingIssuesReferences?.nodes;
+        console.log(data);
         console.log("LINKED ISSUES: new value", linkedIssues);
         if (!linkedIssues || !linkedIssues.length) {
             throw Error("Could not find linked issues");
         }
         linkedIssues.forEach((issue) => {
-            issueDescriptions.push({ body: issue.body, title: issue.title, issue_number: issue.number });
+            issueDescriptions.push({
+                body: issue.body,
+                title: issue.title,
+                issue_number: issue.number,
+            });
             issue.labels.nodes.forEach((issueLabel) => labels.push(issueLabel.name));
         });
         console.log(issueDescriptions);
@@ -9104,7 +9109,10 @@ const main = async () => {
                 owner,
                 issue_number: issueDescriptions.issue_number,
                 repo,
-                body: 'This PR resolves ' + issueDescriptions.title + '\n' + issueDescriptions.body
+                body: "This PR resolves " +
+                    issueDescriptions.title +
+                    "\n" +
+                    issueDescriptions.body,
             });
         });
         await octokit.rest.issues.update({
