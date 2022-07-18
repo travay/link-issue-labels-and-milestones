@@ -37,7 +37,7 @@ const main = async () => {
 
     console.log("LINKED ISSUES: ", linkedIssues);
 
-    if (!linkedIssues) {
+    if (!linkedIssues.length) {
       throw Error("Could not find linked issues");
     }
 
