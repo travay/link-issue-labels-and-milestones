@@ -9062,11 +9062,6 @@ const main = async () => {
         const repo = core.getInput("repo");
         const myToken = core.getInput("myToken");
         const pr_number = parseInt(core.getInput("pr_number"));
-        console.log({
-            owner,
-            repo,
-            pr_number,
-        });
         const octokit = github.getOctokit(myToken);
         const labels = [];
         let milestones = [];
@@ -9081,8 +9076,6 @@ const main = async () => {
             },
         });
         const linkedIssues = data?.repository?.pullRequest?.closingIssuesReferences?.nodes;
-        console.log(data);
-        console.log("LINKED ISSUES: new value", linkedIssues);
         if (!linkedIssues || !linkedIssues.length) {
             throw Error("Could not find linked issues");
         }
@@ -9090,19 +9083,26 @@ const main = async () => {
             issueDescriptions.push({
                 body: issue?.body,
                 title: issue?.title,
-                issue_number: issue?.number,
             });
             issue.labels.nodes.forEach((issueLabel) => labels.push(issueLabel.name));
         });
-        console.log(issueDescriptions);
+        linkedIssues.forEach((issue) => {
+            milestones.push(issue?.milestone?.number);
+        });
+        if (labels.length === 0) {
+            throw Error("Linked issue has no labels, please make sure to appropriately label the issue linked to this PR.");
+        }
+        if (milestones.length === 0) {
+            throw Error("Linked issue has no milestone, please make sure to add a milestone to the issue linked to this PR.");
+        }
         issueDescriptions.forEach(async (issueDescriptions) => {
             await octokit.rest.issues.createComment({
                 owner,
                 issue_number: pr_number,
                 repo,
-                body: "This PR resolves " +
+                body: "This PR resolves: \n" +
                     issueDescriptions.title +
-                    "\n" +
+                    "\n\n" +
                     issueDescriptions.body,
             });
         });
