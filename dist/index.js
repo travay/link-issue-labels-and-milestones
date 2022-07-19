@@ -9098,7 +9098,7 @@ const main = async () => {
         issueDescriptions.forEach(async (issueDescriptions) => {
             await octokit.rest.issues.createComment({
                 owner,
-                issue_number: issueDescriptions.issue_number,
+                issue_number: pr_number,
                 repo,
                 body: "This PR resolves " +
                     issueDescriptions.title +
