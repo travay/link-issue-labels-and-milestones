@@ -28,5 +28,4 @@ interface IssueNode {
 export interface issueDescriptionsObj {
   body: string;
   title: string;
-  issue_number: number;
 }
