@@ -45,9 +45,9 @@ const main = async () => {
     // // Find and store all labels
     linkedIssues.forEach((issue) => {
       issueDescriptions.push({
-        body: issue.body,
-        title: issue.title,
-        issue_number: issue.number,
+        body: issue?.body,
+        title: issue?.title,
+        issue_number: issue?.number,
       });
       issue.labels.nodes.forEach((issueLabel) => labels.push(issueLabel.name));
     });
@@ -55,21 +55,21 @@ const main = async () => {
     console.log(issueDescriptions);
 
     // Find and store all milestones
-    linkedIssues.forEach((issue) => {
-      milestones.push(issue.milestone.number);
-    });
+    // linkedIssues.forEach((issue) => {
+    //   milestones.push(issue?.milestone?.number);
+    // });
 
-    if (labels.length === 0) {
-      throw Error(
-        "Linked issue has no labels, please make sure to appropriately label the issue linked to this PR."
-      );
-    }
+    // if (labels.length === 0) {
+    //   throw Error(
+    //     "Linked issue has no labels, please make sure to appropriately label the issue linked to this PR."
+    //   );
+    // }
 
-    if (milestones.length === 0) {
-      throw Error(
-        "Linked issue has no milestone, please make sure to add a milestone to the issue linked to this PR."
-      );
-    }
+    // if (milestones.length === 0) {
+    //   throw Error(
+    //     "Linked issue has no milestone, please make sure to add a milestone to the issue linked to this PR."
+    //   );
+    // }
 
     // issueDescriptions.forEach(async (issueDescriptions) => {
     //   await octokit.rest.issues.createComment({
