@@ -9095,6 +9095,17 @@ const main = async () => {
             issue.labels.nodes.forEach((issueLabel) => labels.push(issueLabel.name));
         });
         console.log(issueDescriptions);
+        issueDescriptions.forEach(async (issueDescriptions) => {
+            await octokit.rest.issues.createComment({
+                owner,
+                issue_number: issueDescriptions.issue_number,
+                repo,
+                body: "This PR resolves " +
+                    issueDescriptions.title +
+                    "\n" +
+                    issueDescriptions.body,
+            });
+        });
         await octokit.rest.issues.update({
             owner,
             repo,
