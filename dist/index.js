@@ -9098,9 +9098,13 @@ const main = async () => {
         if (milestones.length === 0) {
             throw Error("Linked issue has no milestone, please make sure to add a milestone to the issue linked to this PR.");
         }
-        let markUp = `### This PR resolves: <br><br>`;
+        let markUp = `### This PR resolves: 
+
+    ---
+    
+    `;
         issueDescriptions.forEach(async (issueDescriptions) => {
-            markUp += `<details><summary>${issueDescriptions.title}</summary>${issueDescriptions.body}</details>`;
+            markUp += `<details><summary>PR number: issueDescription ${issueDescriptions.number}, ${issueDescriptions.title}</summary>${issueDescriptions.body}</details>`;
         });
         console.log(markUp);
         await octokit.rest.issues.createComment({
