@@ -9028,6 +9028,8 @@ const linkedLabelsAndMilestonesQueryString = `
   query linkedLabelsAndMilestones($name: String!, $owner: String!, $number: Int!) {
     repository(name: $name, owner: $owner) {
       pullRequest(number: $number) {
+        id
+        body
         closingIssuesReferences(first: 10) {
           nodes {
             number
@@ -9083,6 +9085,7 @@ const main = async () => {
             issueDescriptions.push({
                 body: issue?.body,
                 title: issue?.title,
+                number: issue?.number,
             });
             issue.labels.nodes.forEach((issueLabel) => labels.push(issueLabel.name));
         });
@@ -9095,16 +9098,24 @@ const main = async () => {
         if (milestones.length === 0) {
             throw Error("Linked issue has no milestone, please make sure to add a milestone to the issue linked to this PR.");
         }
+        let markUp = `## This PR resolves: `;
         issueDescriptions.forEach(async (issueDescriptions) => {
-            await octokit.rest.issues.createComment({
-                owner,
-                issue_number: pr_number,
-                repo,
-                body: "This PR resolves: \n" +
-                    issueDescriptions.title +
-                    "\n\n" +
-                    issueDescriptions.body,
-            });
+            markUp += `
+      <br>
+      <br>
+      <details>
+        <summary>${issueDescriptions.title}</summary>
+        <br>
+        ${issueDescriptions.body}
+      </details>
+      `;
+        });
+        console.log(markUp);
+        await octokit.rest.issues.createComment({
+            owner,
+            issue_number: pr_number,
+            repo,
+            body: markUp
         });
         await octokit.rest.issues.update({
             owner,
