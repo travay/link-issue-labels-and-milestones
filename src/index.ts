@@ -60,9 +60,10 @@ const main = async () => {
       );
     }
 
-    let markUp = `## This PR resolves: `;
+    let markUp = `## This PR resolves: 
+    <br>`;
     issueDescriptions.forEach(async (issueDescriptions) => {
-      markUp += `<br><details><summary>${issueDescriptions.title}</summary><br>${issueDescriptions.body}</details>`;
+      markUp += `<details><summary>${issueDescriptions.title}</summary>${issueDescriptions.body}</details><br>`;
     });
 
     console.log(markUp);
