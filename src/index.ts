@@ -62,15 +62,7 @@ const main = async () => {
 
     let markUp = `## This PR resolves: `;
     issueDescriptions.forEach(async (issueDescriptions) => {
-      markUp += `
-      <br>
-      <br>
-      <details>
-        <summary>${issueDescriptions.title}</summary>
-        <br>
-        ${issueDescriptions.body}
-      </details>
-      `
+      markUp += `<br><details><summary>${issueDescriptions.title}</summary><br>${issueDescriptions.body}</details>`;
     });
 
     console.log(markUp);
@@ -79,7 +71,7 @@ const main = async () => {
       owner,
       issue_number: pr_number,
       repo,
-      body: markUp
+      body: markUp,
     });
 
     // Add milestone and labels to PR

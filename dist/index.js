@@ -9100,22 +9100,14 @@ const main = async () => {
         }
         let markUp = `## This PR resolves: `;
         issueDescriptions.forEach(async (issueDescriptions) => {
-            markUp += `
-      <br>
-      <br>
-      <details>
-        <summary>${issueDescriptions.title}</summary>
-        <br>
-        ${issueDescriptions.body}
-      </details>
-      `;
+            markUp += `<br><details><summary>${issueDescriptions.title}</summary><br>${issueDescriptions.body}</details>`;
         });
         console.log(markUp);
         await octokit.rest.issues.createComment({
             owner,
             issue_number: pr_number,
             repo,
-            body: markUp
+            body: markUp,
         });
         await octokit.rest.issues.update({
             owner,
