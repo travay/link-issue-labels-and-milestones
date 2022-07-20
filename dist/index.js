@@ -9098,8 +9098,7 @@ const main = async () => {
         if (milestones.length === 0) {
             throw Error("Linked issue has no milestone, please make sure to add a milestone to the issue linked to this PR.");
         }
-        let markUp = `## This PR resolves: 
-    <br>`;
+        let markUp = `### This PR resolves: <br>`;
         issueDescriptions.forEach(async (issueDescriptions) => {
             markUp += `<details><summary>${issueDescriptions.title}</summary>${issueDescriptions.body}</details><br>`;
         });

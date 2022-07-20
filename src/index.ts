@@ -60,8 +60,7 @@ const main = async () => {
       );
     }
 
-    let markUp = `## This PR resolves: 
-    <br>`;
+    let markUp = `### This PR resolves: <br>`;
     issueDescriptions.forEach(async (issueDescriptions) => {
       markUp += `<details><summary>${issueDescriptions.title}</summary>${issueDescriptions.body}</details><br>`;
     });
