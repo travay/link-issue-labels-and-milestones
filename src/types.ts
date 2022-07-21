@@ -1,6 +1,8 @@
 export interface LinkedLabelsAndMilestonesData {
   repository: {
     pullRequest: {
+      id: string;
+      body: string;
       closingIssuesReferences: {
         nodes: IssueNode[];
       }
@@ -10,6 +12,8 @@ export interface LinkedLabelsAndMilestonesData {
 
 interface IssueNode {
   number: number;
+  body: string;
+  title: string;
   milestone: {
     id: string;
     number: number;
@@ -23,3 +27,8 @@ interface IssueNode {
   }
 }
 
+export interface issueDescriptionsObj {
+  body: string;
+  title: string;
+  number: number;
+}
