@@ -9064,6 +9064,11 @@ const main = async () => {
         const repo = core.getInput("repo");
         const myToken = core.getInput("myToken");
         const pr_number = parseInt(core.getInput("pr_number"));
+        console.log({
+            owner,
+            repo,
+            pr_number,
+        });
         const octokit = github.getOctokit(myToken);
         const labels = [];
         let milestones = [];
@@ -9102,7 +9107,6 @@ const main = async () => {
         issueDescriptions.forEach(async (issueDescriptions) => {
             markUp += `<details><summary>Issue Number: ${issueDescriptions.number} - ${issueDescriptions.title}</summary>${issueDescriptions.body}</details>`;
         });
-        console.log(markUp);
         await octokit.rest.issues.createComment({
             owner,
             issue_number: pr_number,
